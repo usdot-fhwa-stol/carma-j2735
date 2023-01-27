@@ -1,0 +1,383 @@
+TestMessage00 ::= SEQUENCE {
+   -- TestMessage00 is only for MobilityRequest message
+   header          MobilityHeader,
+   body            MobilityRequest,
+   ...
+   }
+TestMessage01 ::= SEQUENCE {
+   -- TestMessage01 is only for MobilityResponse message
+   header    MobilityHeader,
+   body      MobilityResponse,
+   ...
+   }
+TestMessage02 ::= SEQUENCE {
+   -- TestMessage02 is only for MobilityPath message
+   header    MobilityHeader,
+   body      MobilityPath,
+   ...  
+   }
+TestMessage03 ::= SEQUENCE {
+   -- TestMessage03 is only for MobilityOperation message
+   header    MobilityHeader,
+   body      MobilityOperation,
+   ...  
+   }
+
+TestMessage04 ::= SEQUENCE {
+   -- TestMessage04 is used for TrafficControlRequest message
+   body      TrafficControlRequest,
+   ...  
+   }
+
+TestMessage05 ::= SEQUENCE {
+   -- TestMessage05 is used for TrafficControlMessage message
+   body      TrafficControlMessage,
+   ...  
+   }
+TestMessage06 ::= SEQUENCE {
+   -- TestMessage06 is used for EmergencyVehicleResponse message
+   header    MobilityHeader,
+   body      EmergencyVehicleResponse,
+   ...  
+   }
+ 
+-- This part should belong to the regional extension frame for --
+-- the usage of mobility message. Due to the limitation of ASN1C, --
+-- we put them in here for the temporary use. --
+
+MobilityDynamicID ::= IA5String (SIZE(8))
+   -- mobility dynamic ID is the same as host vehicle current BSM ID in hex string
+
+MobilityECEFCoordinate ::= INTEGER(-638363700..638363700)
+   -- X, Y, Z coordinates in ECEF frame
+   -- LSB units are 1 cm
+   -- a value of 0 means unavaliable
+
+MobilityECEFOffsetCoordinate ::= INTEGER(-500..501)
+   -- offset in X, Y, Z coordinates in ECEF frame
+   -- LSB units are 1 cm
+   -- a value of 501 means unavaliable
+
+MobilityGUID ::= IA5String (SIZE(36))
+   -- the unique ID for different plan/strategy events
+   -- in Java UUID format xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+
+MobilityParameters ::= IA5String (SIZE(2..1000))
+   -- the content of this string is defined by each plugin
+
+MobilityPlanType ::= ENUMERATED {
+   unknown (0), 
+   changingLanesToTheLeft (1), 
+   changingLanesToTheRight (2), 
+   joinPlatoonAtRear (3),
+   platoonFollowerJoin (4),
+   joinPlatoonFromFront (5),
+   platoonFrontJoin (6),
+   cutInFromSide (7),
+   platoonCutInJoin (8),
+   stopCreateGap (9),
+   cutInFrontDone (10),
+   cutInMidOrRearDone (11),
+   platoonDeparture (12),
+   deleteMember (13),
+   ...
+   }
+   
+MobilityReason ::= ENUMERATED {
+   unknown (0), 
+   accepted (1), 
+   safetyViolation (2), 
+   insufficientTime (3),
+   planConflict (4),
+   otherwiseEngaged (5),
+   insufficientUrgency (6),
+   planUnclear (7),
+   other (8),
+   ...
+   }
+   
+MobilityRepeat ::= ENUMERATED {
+   unknown (0), 
+   requestAgain (1), 
+   neverRequestAgain (2), 
+   ...
+   }
+
+MobilityResponseFlag ::= BOOLEAN
+   -- the value indicates whether corresponding request is accepted or not
+
+MobilityStaticID ::= IA5String (SIZE(2..16))
+   -- the license plate number for each vehicle
+   -- "[]" indicates ID is not specified
+
+MobilityStrategy ::= IA5String (SIZE(2..50))
+   -- the desired strategy to handle this message
+   -- "[]" means not defined
+
+MobilityTimestamp ::= IA5String (SIZE(19))
+   -- UNIX timestamp in milliseconds in string, which indicates the time elapsed since UNIX epoch
+   -- the maximum value is the MAX_VALUE of Java Long type (which is in length 19)
+
+MobilityUrgency ::= INTEGER (0..1000)
+   -- a value of 0 shall be used for unknown
+   -- a value of 1000 shall be used for the highest urgency
+
+MobilityECEFOffset ::= SEQUENCE {
+   offsetX         MobilityECEFOffsetCoordinate,
+   offsetY         MobilityECEFOffsetCoordinate,
+   offsetZ         MobilityECEFOffsetCoordinate
+}
+
+MobilityHeader ::= SEQUENCE {
+   hostStaticId    MobilityStaticID,
+   targetStaticId  MobilityStaticID,
+   hostBSMId       MobilityDynamicID,
+   planId          MobilityGUID,
+   timestamp       MobilityTimestamp
+}
+
+MobilityLocation ::= SEQUENCE {
+   ecefX           MobilityECEFCoordinate,
+   ecefY           MobilityECEFCoordinate,
+   ecefZ           MobilityECEFCoordinate,
+   timestamp       MobilityTimestamp
+}
+
+MobilityLocationOffsets ::= SEQUENCE (SIZE(0..60)) OF MobilityECEFOffset
+
+MobilityOperation ::= SEQUENCE {
+   strategy        MobilityStrategy,
+   operationParams MobilityParameters
+}
+
+MobilityPath ::= SEQUENCE {
+   location        MobilityLocation,
+   trajectory      MobilityLocationOffsets
+}
+
+MobilityRequest ::= SEQUENCE {
+   strategy        MobilityStrategy,
+   planType        MobilityPlanType,
+   urgency         MobilityUrgency,
+   location        MobilityLocation,
+   strategyParams  MobilityParameters,
+   trajectoryStart MobilityLocation OPTIONAL,
+   trajectory      MobilityLocationOffsets OPTIONAL,
+   expiration      MobilityTimestamp OPTIONAL
+}
+
+MobilityResponse ::= SEQUENCE {
+   urgency         MobilityUrgency,
+   isAccepted      MobilityResponseFlag,
+   planType        MobilityPlanType,
+   reason          MobilityReason OPTIONAL,
+   repeat          MobilityRepeat OPTIONAL
+}
+
+EmergencyVehicleResponse ::= SEQUENCE 
+{
+   canChangeLanes  BOOLEAN,
+                   -- False if the vehicle can not get out of the way
+   reason          IA5String (SIZE(1..127)) OPTIONAL
+                   -- example: "CMV is unable to change lanes for <insert-supported-reason-here>"
+}
+
+
+-- End of self-defined mobility message data frame --
+
+-- Start of self-defined geofence message data frame --
+Id64b ::= OCTET STRING (SIZE(8)) -- 8-byte binary value that can be used for shorter unique ids
+
+
+Id128b ::= OCTET STRING (SIZE(16)) -- 16-byte binary value typicially used for unique ids
+
+
+EpochMins ::= INTEGER (0..153722867280912) -- minutes since epoch January 1, 1970 00:00 UTC
+
+
+TrafficControlMessage ::= CHOICE
+{
+	reserved NULL, -- skip version zero
+	tcmV01 TrafficControlMessageV01, -- traffic control message version 1
+	...
+}
+
+
+TrafficControlMessageV01 ::= SEQUENCE
+{
+	reqid Id64b, -- ephemeral identifier of originating request
+	reqseq INTEGER (0..255), -- sequential counter for originating request
+	msgtot INTEGER (0..65535), -- total expected traffic control message responses
+	msgnum INTEGER (0..65535), -- message index for each response out of total responses
+	id Id128b, -- unique traffic control id
+	updated EpochMins, 
+	package [0] TrafficControlPackage OPTIONAL, -- related traffic control ids
+	params [1] TrafficControlParams OPTIONAL, 
+	geometry [2] TrafficControlGeometry OPTIONAL
+}
+
+
+TrafficControlPackage ::= SEQUENCE
+{
+	label IA5String (SIZE(1..63)) OPTIONAL, -- label such as incident, workzone, etc.
+	tcids SEQUENCE (SIZE(1..63)) OF Id128b -- related traffic control ids
+}
+
+
+TrafficControlParams ::= SEQUENCE
+{
+	vclasses SEQUENCE (SIZE(1..255)) OF TrafficControlVehClass,
+	schedule TrafficControlSchedule,
+	regulatory BOOLEAN,
+	detail TrafficControlDetail
+}
+
+
+TrafficControlVehClass ::= ENUMERATED
+{
+	any, 
+	pedestrian,
+	bicycle,
+	micromobile,
+	motorcycle,
+	passenger-car,
+	light-truck-van,
+	bus,
+	two-axle-six-tire-single-unit-truck,
+	three-axle-single-unit-truck,
+	four-or-more-axle-single-unit-truck,
+	four-or-fewer-axle-single-trailer-truck,
+	five-axle-single-trailer-truck,
+	six-or-more-axle-single-trailer-truck,
+	five-or-fewer-axle-multi-trailer-truck,
+	six-axle-multi-trailer-truck,
+	seven-or-more-axle-multi-trailer-truck,
+	rail,
+	unclassified, 
+	...
+}
+
+
+TrafficControlSchedule ::= SEQUENCE
+{
+	start EpochMins, -- start time required, even if it's the epoch value zero
+	end [0] EpochMins OPTIONAL, -- default to max value 153722867280912
+	dow [1] DayOfWeek OPTIONAL, 
+	between [2] SEQUENCE (SIZE(1..63)) OF DailySchedule OPTIONAL, 
+	repeat [3] RepeatParams OPTIONAL
+}
+
+DayOfWeek ::= BIT STRING
+{
+	sun (6), 
+	mon (5), 
+	tue (4), 
+	wed (3), 
+	thu (2), 
+	fri (1), 
+	sat (0)
+}
+
+DailySchedule ::= SEQUENCE
+{
+	begin INTEGER (0..1439), -- minutes relative to midnight local time
+	duration INTEGER (0..1439) -- the number of active minutes, up to one day
+}
+
+
+RepeatParams ::= SEQUENCE
+{
+	offset INTEGER (0..1439), -- shift repetition start relative to midnight local time
+	period INTEGER (0..1439), -- minutes between successive time spans
+	span INTEGER (0..1439) -- number of minutes schedule is active, must be less than the period
+}
+
+
+TrafficControlGeometry ::= SEQUENCE
+{
+	proj IA5String (SIZE(0..63)),
+	datum IA5String (SIZE(0..63)),
+	reftime EpochMins,
+	reflon Longitude,
+	reflat Latitude,
+	refelv Elevation, -- decimeter offset -4096 from reference datum
+	refwidth INTEGER (0..32767), -- default reference lane width in units of cm
+	heading INTEGER (0..3599), -- initial path heading clockwise from north in tenths of degrees
+	nodes SEQUENCE (SIZE(1..255)) OF PathNode
+}
+
+
+PathNode ::= SEQUENCE
+{
+	x INTEGER (-32768..32767), -- units of cm
+	y INTEGER (-32768..32767), -- units of cm
+	z [0] INTEGER (-32768..32767) OPTIONAL, -- units of decimeters
+	width [1] INTEGER (-128..127) OPTIONAL -- units of cm
+}
+
+TrafficControlDetail ::= CHOICE
+{
+	signal OCTET STRING (SIZE(0..63)),
+	stop NULL,
+	yield NULL,
+	notowing NULL,
+	restricted NULL,
+	closed ENUMERATED {open, closed, taperleft, taperright, openleft, openright},
+	chains ENUMERATED {no, permitted, required},
+	direction ENUMERATED {forward, reverse},
+	lataffinity ENUMERATED {left, right},
+	latperm SEQUENCE (SIZE(2)) OF ENUMERATED {none, permitted, passing-only, emergency-only},
+	parking ENUMERATED {no, parallel, angled},
+	minspeed INTEGER (0..1023), -- tenths of m/s
+	maxspeed INTEGER (0..1023), -- tenths of m/s
+	minhdwy INTEGER (0..2047), -- tenths of meters
+	maxvehmass INTEGER (0..65535), -- kg
+	maxvehheight INTEGER (0..127), -- tenths of meters
+	maxvehwidth INTEGER (0..127), -- tenths of meters
+	maxvehlength INTEGER (0..1023), -- tenths of meters
+	maxvehaxles INTEGER (2..15), -- number of axles
+	minvehocc INTEGER (1..15), -- vehicle passenger count
+	maxplatoonsize INTEGER (1..63), -- vehicle count
+	minplatoonhdwy INTEGER (0..2047), -- tenths of meters
+	...
+}
+
+
+
+TrafficControlRequest ::= CHOICE
+
+{
+
+	reserved NULL, -- skip version zero
+	tcrV01 TrafficControlRequestV01, -- traffic control request version 1
+	...
+
+}
+
+
+TrafficControlRequestV01 ::= SEQUENCE
+{
+	reqid Id64b, -- randomly generated ephemeral request identifier
+	reqseq INTEGER (0..255), -- sequential counter used to differentiate traffic control requests
+	scale INTEGER (-3..3), -- vertex offset units 10^n meters
+	bounds SEQUENCE (SIZE(1..63)) OF TrafficControlBounds
+}
+
+
+TrafficControlBounds ::= SEQUENCE
+{
+	oldest EpochMins, -- timestamp of oldest traffic control message within bounds
+	reflon Longitude, -- initial vertex reference longitude
+	reflat Latitude, -- initial vertex reference latitude
+	offsets SEQUENCE (SIZE(3)) OF OffsetPoint -- relative vertex positions in scaled meters
+}
+
+
+OffsetPoint ::= SEQUENCE
+{
+	deltax INTEGER (-32768..32767), -- relative horizontal vertex position in scaled meters
+	deltay INTEGER (-32768..32767) -- relative vertical vertex position in scaled meters
+}
+
+-- End of self-defined geofence message data frame --
+
