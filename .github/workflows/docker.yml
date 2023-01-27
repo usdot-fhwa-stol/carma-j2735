@@ -13,10 +13,23 @@ jobs:
   build-package:
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/usdot-fhwa-stol/carma-builds:c_src_files
+      image: ghcr.io/usdot-fhwa-stol/carma-builds:latest
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+      - name: Install dependencies
+        run: |
+          apt update
+          ./install_dependencies.sh
+      - name: Get SAE ASN
+        run: |
+          git clone https://github.com/usdot-fhwa-stol/CARMASensitive.git
+          cd CARMASensitive
+          git checkout sae_asn
+          cp "asn/J2735_201603DA_copyright_updated 12.2.ASN" asn/J2735_201603DA.asn
+      - name: Install ASN1C
+        run: |
+          ./install_asn1c.sh
       - name: Build
         run: |
           ./build.sh
