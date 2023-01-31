@@ -1,3 +1,6 @@
 /asn/sae
 /build
 /output
+# do not commit as we want to generate these
+/include
+/src

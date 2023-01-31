@@ -30,5 +30,7 @@ echo "Removing example files"
 rm *example*
 
 popd
+mkdir -p include
 cp output/*.h include
+mkdir -p src
 cp output/*.c src
