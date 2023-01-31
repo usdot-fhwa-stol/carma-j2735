@@ -35,6 +35,10 @@ jobs:
       - name: Install ASN1C
         run: |
           ./install_asn1c.sh
+      - name: Generate C and H files
+          ./generate.sh
+        run: |
+          ./install_asn1c.sh
       - name: Build
         run: |
           ./build.sh
