@@ -23,7 +23,7 @@ jobs:
           ./install_dependencies.sh
       - name: Get SAE ASN
         run: |
-          git clone https://github.com/usdot-fhwa-stol/CARMASensitive.git
+          git clone https://${{ secrets.GITHUB_TOKEN }}@github.com/usdot-fhwa-stol/CARMASensitive.git
           cd CARMASensitive
           git checkout sae_asn
           cp "asn/J2735_201603DA_copyright_updated 12.2.ASN" asn/J2735_201603DA.asn
