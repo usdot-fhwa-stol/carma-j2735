@@ -26,7 +26,7 @@ jobs:
         with:
           repository: usdot-fhwa-stol/CARMASensitive
           ref: sae_asn
-          token: ${{ github.token }}
+          token: ${{ secrets.GITHUB_TOKEN }}
           path: CARMASensitive
       - name: Copy SAE ASN
         run: |
