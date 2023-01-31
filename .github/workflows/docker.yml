@@ -22,11 +22,16 @@ jobs:
           apt update
           ./install_dependencies.sh
       - name: Get SAE ASN
+        uses: actions/checkout@v3
+        with:
+          repository: usdot-fhwa-stol/CARMASensitive
+          ref: sae_asn
+          token: ${{ github.token }}
+          path: CARMASensitive
+      - name: Copy SAE ASN
         run: |
-          git clone https://${{ secrets.GITHUB_TOKEN }}@github.com/usdot-fhwa-stol/CARMASensitive.git
-          cd CARMASensitive
-          git checkout sae_asn
-          cp "asn/J2735_201603DA_copyright_updated 12.2.ASN" asn/J2735_201603DA.asn
+          mkdir -p asn/sae
+          cp "CARMASensitive/asn/J2735_201603DA_copyright_updated 12.2.ASN" asn/sae/J2735_201603DA.asn
       - name: Install ASN1C
         run: |
           ./install_asn1c.sh
