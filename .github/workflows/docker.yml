@@ -36,9 +36,8 @@ jobs:
         run: |
           ./install_asn1c.sh
       - name: Generate C and H files
-          ./generate.sh
         run: |
-          ./install_asn1c.sh
+          ./generate.sh
       - name: Build
         run: |
           ./build.sh
