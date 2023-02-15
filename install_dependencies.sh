@@ -2,8 +2,4 @@
 
 set -ex
 
-if [ ! -z "${BUILD_ARCHITECTURE}" ]; then
-    PACKAGE_ARCHITECTURE=":${BUILD_ARCHITECTURE}"
-fi
-
-apt-get install -y automake libtool flex git
+${CARMA_OPT_DIR}/scripts/install_dependencies_script.sh -c CMakeLists.txt automake libtool flex git

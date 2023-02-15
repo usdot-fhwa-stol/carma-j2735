@@ -10,6 +10,8 @@ project(carma_asn1c
 
 add_library(${PROJECT_NAME} SHARED)
 
+set (CPACK_DEBIAN_PACKAGE_HOMEPAGE https://github.com/usdot-fhwa-stol/carma-j2735)
+
 include(CommonSource)
 include(InstallingGeneral)
 include(InstallingConfigs)
