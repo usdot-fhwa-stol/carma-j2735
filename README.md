@@ -1,6 +1,15 @@
 The CARMA J2735 library provides enocoding and decoding of messages specified by [SAE J2735](https://www.sae.org/standards/content/j2735set_201603/) along with the CARMA created messages using in Cooperative Driving Automation (CDA).
 
-To use:
+# CI Status
+
+These badges are for the default branch only.
+
+[![Build Workflow](https://github.com/usdot-fhwa-stol/snmp-client/actions/workflows/build.yml/badge.svg)](https://github.com/usdot-fhwa-stol/snmp-client/actions/workflows/build.yml)
+
+[![Sonar Workflow](https://github.com/usdot-fhwa-stol/snmp-client/actions/workflows/sonar-scanner.yml/badge.svg)](https://github.com/usdot-fhwa-stol/snmp-client/actions/workflows/sonar-scanner.yml)
+
+## Usage
+
 * Ensure you have the CARMA apt repository in your list.
 * Run: ```apt-get install carma-j2735```
 
