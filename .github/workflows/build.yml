@@ -30,7 +30,6 @@ jobs:
           repository: usdot-fhwa-stol/CARMASensitive
           ref: sae_asn
           ssh-key: ${{ secrets.PRIVATE_SSH_KEY }}
-          passphrase: ${{ secrets.PRIVATE_SSH_KEY_PASSPHRASE }}
           path: CARMASensitive
       - name: Copy SAE ASN
         run: |
