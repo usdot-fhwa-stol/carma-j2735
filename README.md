@@ -15,7 +15,7 @@ These badges are for the default branch only.
 
 ## Building
 
-In order to build this library manually you will need to obtain a copy of the SAE J2735 201603 ASN file and place it in a folder at asn/sae inside the project.  The CI build pulls this file from a private CARMA repository.
+In order to build this library manually you will need to obtain a copy of the SAE J2735 201603 ASN file and place it in a folder at asn/sae inside the project.  The CI build pulls this file from a private CARMA repository using a deploy key to access the file.
 
 ## Contact
 Please click on the CARMA logo below to visit the Federal Highway Adminstration(FHWA) CARMA website.
