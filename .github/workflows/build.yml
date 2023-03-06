@@ -58,7 +58,7 @@ jobs:
       - name: Download generated files
         uses: actions/download-artifact@v3
         with:
-          name: ${{ inputs.artifact-name }}
+          name: asn-generated-code
       - name: Extract C and H files
         run: |
           tar cvf generated_files.tar
