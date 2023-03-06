@@ -61,7 +61,7 @@ jobs:
           name: asn-generated-code
       - name: Extract C and H files
         run: |
-          tar cvf generated_files.tar
+          tar xvf generated_files.tar
       - name: Build
         uses: usdot-fhwa-stol/actions/build-cpp-library@main
         with:
@@ -73,6 +73,9 @@ jobs:
           path: build*/_packages/*.deb
 
   deb-s3-upload:
+    strategy:
+      matrix:
+        architecture: [x64, armhf, arm64]
     runs-on: ubuntu-latest
     needs:
       - build-package
