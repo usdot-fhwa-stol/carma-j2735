@@ -55,6 +55,13 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+      - name: Download generated files
+        uses: actions/download-artifact@v3
+        with:
+          name: ${{ inputs.artifact-name }}
+      - name: Extract C and H files
+        run: |
+          tar cvf generated_files.tar
       - name: Build
         uses: usdot-fhwa-stol/actions/build-cpp-library@main
         with:
