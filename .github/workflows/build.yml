@@ -4,25 +4,16 @@ on:
   pull_request:
   push:
 
-env:
-  AWS_ACCESS_KEY_ID: ${{ secrets.APT_REPO_AWS_ACCESS_KEY_ID }}
-  AWS_SECRET_ACCESS_KEY: ${{ secrets.APT_REPO_AWS_SECRET_ACCESS_KEY }}
-  AWS_BUCKET_NAME: stol-apt-repository
-
 jobs:
-  git-revision-info-get:
-    uses: usdot-fhwa-stol/actions/.github/workflows/git-revision-info.yml@main
-  build-package:
+  generate-asn-codecs:
     runs-on: ubuntu-latest
-    needs: git-revision-info-get
     container:
-      image: ghcr.io/usdot-fhwa-stol/carma-builds:latest
+      image: ghcr.io/usdot-fhwa-stol/carma-builds-x64:latest
     steps:
       - name: Checkout
         uses: actions/checkout@v3
       - name: Install dependencies
         run: |
-          apt update
           ./install_dependencies.sh
       - name: Get SAE ASN
         uses: actions/checkout@v3
@@ -41,12 +32,59 @@ jobs:
       - name: Generate C and H files
         run: |
           ./generate.sh
+          tar cvf generated_files.tar src include
+      - name: Upload generated files
+        uses: actions/upload-artifact@v3
+        with:
+          name: asn-generated-code
+          path: generated_files.tar
+
+  git-revision-info-get:
+    uses: usdot-fhwa-stol/actions/.github/workflows/git-revision-info.yml@main
+
+  build-package:
+    strategy:
+      matrix:
+        architecture: [x64, armhf, arm64]
+    runs-on: ubuntu-latest
+    needs:
+      - git-revision-info-get
+      - generate-asn-codecs
+    container:
+      image: ghcr.io/usdot-fhwa-stol/carma-builds-${{ matrix.architecture }}:latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Download generated files
+        uses: actions/download-artifact@v3
+        with:
+          name: asn-generated-code
+      - name: Extract C and H files
+        run: |
+          tar xvf generated_files.tar
       - name: Build
         uses: usdot-fhwa-stol/actions/build-cpp-library@main
         with:
           package-version-suffix: ${{ needs.git-revision-info-get.outputs.git-revision-info }}
-      - name: Setup deb-s3
-        uses: usdot-fhwa-stol/actions/setup-deb-s3@main
-      - name: Upload .deb files
-        run: |
-          deb-s3 upload --codename develop --bucket ${{ env.AWS_BUCKET_NAME }} build/_packages/*.deb
+      - name: Upload deb artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: deb-packages-${{ matrix.architecture }}
+          path: build*/_packages/*.deb
+
+  deb-s3-upload:
+    strategy:
+      matrix:
+        architecture: [x64, armhf, arm64]
+    runs-on: ubuntu-latest
+    needs:
+      - build-package
+    container:
+      image: ghcr.io/usdot-fhwa-stol/actions-deb-s3:main
+    steps:
+      - name: Publish deb artifacts
+        uses: usdot-fhwa-stol/actions/deb-s3-upload@main
+        with:
+          artifact-name: deb-packages-${{ matrix.architecture }}
+          aws-access-key-id: ${{ secrets.APT_REPO_AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.APT_REPO_AWS_SECRET_ACCESS_KEY }}
