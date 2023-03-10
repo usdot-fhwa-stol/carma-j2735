@@ -11,7 +11,7 @@ These badges are for the default branch only.
 ## Usage
 
 * Ensure you have the CARMA apt repository in your list.
-* Run: ```apt-get install carma-j2735```
+* Run: ```apt-get install carma-j2735-<soversion>```
 
 ## Building
 
