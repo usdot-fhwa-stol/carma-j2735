@@ -1,3 +1,5 @@
+-- START MAIN_REPLACEMENT
+
 TestMessage00 ::= SEQUENCE {
    -- TestMessage00 is only for MobilityRequest message
    header          MobilityHeader,
@@ -38,6 +40,12 @@ TestMessage06 ::= SEQUENCE {
    -- TestMessage06 is used for EmergencyVehicleResponse message
    header    MobilityHeader,
    body      EmergencyVehicleResponse,
+   ...  
+   }
+TestMessage07 ::= SEQUENCE {
+   -- TestMessage07 is used for EmergencyVehicleAck message
+   header    MobilityHeader,
+   body      EmergencyVehicleAck,
    ...  
    }
  
@@ -182,6 +190,11 @@ EmergencyVehicleResponse ::= SEQUENCE
                    -- example: "CMV is unable to change lanes for <insert-supported-reason-here>"
 }
 
+EmergencyVehicleAck ::= SEQUENCE 
+{
+   acknowledgement  BOOLEAN
+                   -- True when the emergency vehicle has received the EmergencyVehicleResponse message (also the only time this message is sent, so currently always true)
+}
 
 -- End of self-defined mobility message data frame --
 
@@ -301,7 +314,7 @@ TrafficControlGeometry ::= SEQUENCE
 	reflon Longitude,
 	reflat Latitude,
 	refelv Elevation, -- decimeter offset -4096 from reference datum
-	refwidth INTEGER (0..32767), -- default reference lane width in units of cm
+	refwidth INTEGER (0..32767) OPTIONAL, -- default reference lane width in units of cm
 	heading INTEGER (0..3599), -- initial path heading clockwise from north in tenths of degrees
 	nodes SEQUENCE (SIZE(1..255)) OF PathNode
 }
@@ -381,3 +394,48 @@ OffsetPoint ::= SEQUENCE
 
 -- End of self-defined geofence message data frame --
 
+-- END MAIN_REPLACEMENT
+
+REGION DEFINITIONS AUTOMATIC TAGS::= BEGIN 
+
+-- START REGION_DEFINITIONS
+Reg-BasicSafetyMessage     DSRC.REG-EXT-ID-AND-TYPE ::= { 
+   { AddGrpCarma.BasicSafetyMessage-addGrpCarma IDENTIFIED BY DSRC.addGrpCarma},
+   ... 
+}
+-- END REGION_DEFINITIONS
+
+-- START REMOVE
+Reg-BasicSafetyMessage     DSRC.REG-EXT-ID-AND-TYPE ::= { ... }
+-- END REMOVE
+
+-- START APPEND
+-- ^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-
+-- 
+-- Begin module: AddGrpCarma
+-- 
+-- ^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-
+AddGrpCarma DEFINITIONS AUTOMATIC TAGS::= BEGIN 
+
+BasicSafetyMessage-addGrpCarma ::= SEQUENCE {
+   routeDestinationPoints  SEQUENCE (SIZE(1..8)) OF Position3D-addGrpCarma OPTIONAL,
+                           -- A seq of route destination points
+                           -- that a vehicle will travel through
+   ... 
+   }
+   
+Position3D-addGrpCarma ::= SEQUENCE {
+   lat        DSRC.Latitude,                -- in 1/10th micro degrees
+   long       DSRC.Longitude,               -- in 1/10th micro degrees
+   elevation  DSRC.Elevation  OPTIONAL,     -- in 10 cm units
+   ...
+   }
+ 
+END
+-- End of the AddGrpCarma module.
+-- END APPEND
+
+-- START REGION_ADD
+   -- this is added to the RegionId definition
+   addGrpCarma  RegionId ::= 128 -- CARMA regional extensions
+-- END REGION_ADD
