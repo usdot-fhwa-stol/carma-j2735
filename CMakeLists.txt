@@ -3,8 +3,8 @@ cmake_minimum_required(VERSION 3.10.2)
 # where to find our CMake modules
 set(CMAKE_MODULE_PATH "$ENV{CARMA_OPT_DIR}/cmake")
 
-project(carma_asn1c
-    DESCRIPTION "CARMA ASN1C encoding/decoding library"
+project(carma_j2735
+    DESCRIPTION "CARMA ASN1C encoding/decoding library for J2735 messages"
     HOMEPAGE_URL https://github.com/usdot-fhwa-stol/carma-j2735
 	VERSION 0.0.1
 )
