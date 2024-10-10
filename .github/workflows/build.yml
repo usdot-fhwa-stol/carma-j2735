@@ -51,7 +51,7 @@ jobs:
       - git-revision-info-get
       - generate-asn-codecs
     container:
-      image: ghcr.io/usdot-fhwa-stol/carma-builds-${{ matrix.architecture }}:latest
+      image: ghcr.io/usdot-fhwa-stol/carma-builds-${{ matrix.architecture }}:jammy
     steps:
       - name: Checkout
         uses: actions/checkout@v3
