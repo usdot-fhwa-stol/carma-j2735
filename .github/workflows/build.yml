@@ -20,7 +20,7 @@ jobs:
         uses: actions/checkout@v3
         with:
           repository: usdot-fhwa-stol/CARMASensitive
-          token: ${{ github.token }}
+          token: ${{ secrets.GH_PAT }}
           path: CARMASensitive
       - name: Copy SAE ASN
         run: |
