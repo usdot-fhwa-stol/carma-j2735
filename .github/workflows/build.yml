@@ -52,9 +52,9 @@ jobs:
           - architecture: x64
             ubuntu: jammy
             build: true
-          - architecture: arm64
-            ubuntu: focal
-            build: true
+          # - architecture: arm64
+          #   ubuntu: focal
+          #   build: true
           - architecture: arm64
             ubuntu: jammy
             build: true
@@ -93,9 +93,9 @@ jobs:
           - architecture: x64
             ubuntu: jammy
             build: true
-          - architecture: arm64
-            ubuntu: focal
-            build: true
+          # - architecture: arm64
+          #   ubuntu: focal
+          #   build: true
           - archiecture: arm64
             ubuntu: jammy
             build: true
