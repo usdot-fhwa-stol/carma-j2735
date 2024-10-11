@@ -96,7 +96,7 @@ jobs:
           # - architecture: arm64
           #   ubuntu: focal
           #   build: true
-          - archiecture: arm64
+          - architecture: arm64
             ubuntu: jammy
             build: true
     runs-on: ubuntu-latest
