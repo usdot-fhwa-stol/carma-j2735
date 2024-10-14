@@ -12,8 +12,8 @@ set -ex
 # mkdir -p output
 
 # # break up the CARMA ASN file based on the sections
-CARMA_ASN_FILE=asn/carma_j2735.asn
-OUTPUT_FILE=output/carma_complete_j2735.asn
+# CARMA_ASN_FILE=asn/carma_j2735.asn
+# OUTPUT_FILE=output/carma_complete_j2735.asn
 # awk '/START MAIN_REPLACEMENT/{ f = 1; next } /END MAIN_REPLACEMENT/{ f = 0 } f' ${CARMA_ASN_FILE} > output/main_replacement.txt
 # awk '/START REMOVE/{ f = 1; next } /END REMOVE/{ f = 0 } f' ${CARMA_ASN_FILE} > output/remove.txt
 # awk '/START APPEND/{ f = 1; next } /END APPEND/{ f = 0 } f' ${CARMA_ASN_FILE} > output/append.txt
@@ -21,7 +21,7 @@ OUTPUT_FILE=output/carma_complete_j2735.asn
 # awk '/START REGION_DEFINITIONS/{ f = 1; next } /END REGION_DEFINITIONS/{ f = 0 } f' ${CARMA_ASN_FILE} > output/region_definitions.txt
 
 # # create the output file to start
-cat asn/sae/*.asn > ${OUTPUT_FILE}
+# cat asn/sae/*.asn > ${OUTPUT_FILE}
 
 # # do the removal
 # grep -Fvf output/remove.txt ${OUTPUT_FILE} > ${OUTPUT_FILE}.tmp
