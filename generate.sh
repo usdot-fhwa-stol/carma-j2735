@@ -8,8 +8,8 @@ set -ex
 #     echo "Please provide the J2735 ASN files from SAE in a asn/sae directory"
 #     exit 1
 # fi
-# rm -rf output
-# mkdir -p output
+rm -rf output
+mkdir -p output
 
 # # break up the CARMA ASN file based on the sections
 # CARMA_ASN_FILE=asn/carma_j2735.asn
