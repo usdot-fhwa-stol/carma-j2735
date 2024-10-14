@@ -25,7 +25,7 @@ jobs:
       - name: Copy SAE ASN
         run: |
           mkdir -p asn/sae
-          cp "CARMASensitive/asn/J2735_201603DA_copyright_updated 12.2.ASN" asn/sae/J2735_201603DA.asn
+          cp "CARMASensitive/J2735_201603_2023-06-22.asn" asn/sae/J2735_201603DA.asn
       - name: Install ASN1C
         run: |
           ./install_asn1c.sh
