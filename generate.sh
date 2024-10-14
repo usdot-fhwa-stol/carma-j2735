@@ -54,7 +54,7 @@ sed -i "/-- The values 128 and above are for local region use/ r output/region_a
 pushd output
 
 # create the source and header files
-asn1c -pdu=MessageFrame -fcompound-names -gen-PER ***.asn
+asn1c -pdu=MessageFrame -fcompound-names -gen-PER -fincludes-quoted ***.asn
 echo "Removing example files"
 rm *example*
 
