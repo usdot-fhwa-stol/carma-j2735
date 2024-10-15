@@ -6,9 +6,8 @@ set -ex
 mkdir /tmp/asn1c
 cd /tmp/asn1c
 
-git clone https://github.com/vlm/asn1c.git
+git clone https://github.com/usdot-fhwa-stol/usdot-asn1c
 cd asn1c
-git checkout 9925dbbda86b436896108439ea3e0a31280a6065
 
 test -f configure || autoreconf -iv
 ./configure
