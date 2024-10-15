@@ -54,7 +54,7 @@ mkdir -p output
 pushd output
 
 # create the source and header files
-asn1c -pdu=MessageFrame -fcompound-names -gen-PER ../asn/sae/***.asn
+asn1c -pdu=MessageFrame -fcompound-names -fincludes-quoted ../asn/sae/***.asn
 echo "Removing example files"
 rm *example*
 
