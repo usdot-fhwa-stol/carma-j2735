@@ -7,7 +7,7 @@ mkdir /tmp/asn1c
 cd /tmp/asn1c
 
 git clone https://github.com/usdot-fhwa-stol/usdot-asn1c
-cd asn1c
+cd usdot-asn1c
 
 test -f configure || autoreconf -iv
 ./configure
