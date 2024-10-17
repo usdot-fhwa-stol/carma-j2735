@@ -8,23 +8,24 @@ jobs:
   generate-asn-codecs:
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/usdot-fhwa-stol/carma-builds-x64:latest
+      image: ghcr.io/usdot-fhwa-stol/carma-builds-x64:jammy
     steps:
       - name: Checkout
         uses: actions/checkout@v3
       - name: Install dependencies
         run: |
           ./install_dependencies.sh
+          apt install -y openssh-client
       - name: Get SAE ASN
         uses: actions/checkout@v3
         with:
           repository: usdot-fhwa-stol/CARMASensitive
-          ssh-key: ${{ secrets.PRIVATE_SSH_KEY }}
+          token: ${{ secrets.GH_PAT }}
           path: CARMASensitive
       - name: Copy SAE ASN
         run: |
           mkdir -p asn/sae
-          cp "CARMASensitive/asn/J2735_201603DA_copyright_updated 12.2.ASN" asn/sae/J2735_201603DA.asn
+          cp "CARMASensitive/J2735_201603_2023-06-22.asn" asn/sae/J2735_201603DA.asn
       - name: Install ASN1C
         run: |
           ./install_asn1c.sh
@@ -44,13 +45,25 @@ jobs:
   build-package:
     strategy:
       matrix:
-        architecture: [x64, armhf, arm64]
+        include: 
+          - architecture: x64
+            ubuntu: focal
+            build: true
+          - architecture: x64
+            ubuntu: jammy
+            build: true
+          # - architecture: arm64
+          #   ubuntu: focal
+          #   build: true
+          - architecture: arm64
+            ubuntu: jammy
+            build: true
     runs-on: ubuntu-latest
     needs:
       - git-revision-info-get
       - generate-asn-codecs
     container:
-      image: ghcr.io/usdot-fhwa-stol/carma-builds-${{ matrix.architecture }}:latest
+      image: ghcr.io/usdot-fhwa-stol/carma-builds-${{ matrix.architecture }}:${{ matrix.ubuntu }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -66,15 +79,26 @@ jobs:
         with:
           package-version-suffix: ${{ needs.git-revision-info-get.outputs.git-revision-info }}
       - name: Upload deb artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: deb-packages-${{ matrix.architecture }}
+          name: deb-packages-${{ matrix.architecture }}-${{ matrix.ubuntu }}
           path: build*/_packages/*.deb
-
   deb-s3-upload:
     strategy:
       matrix:
-        architecture: [x64, armhf, arm64]
+        include: 
+          - architecture: x64
+            ubuntu: focal
+            build: true
+          - architecture: x64
+            ubuntu: jammy
+            build: true
+          # - architecture: arm64
+          #   ubuntu: focal
+          #   build: true
+          - architecture: arm64
+            ubuntu: jammy
+            build: true
     runs-on: ubuntu-latest
     needs:
       - build-package
@@ -84,6 +108,7 @@ jobs:
       - name: Publish deb artifacts
         uses: usdot-fhwa-stol/actions/deb-s3-upload@main
         with:
-          artifact-name: deb-packages-${{ matrix.architecture }}
-          aws-access-key-id: ${{ secrets.APT_REPO_AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.APT_REPO_AWS_SECRET_ACCESS_KEY }}
+          artifact-name: deb-packages-${{ matrix.architecture }}-${{ matrix.ubuntu }}
+          aws-access-key-id: ${{ secrets.APT_REPO_AWS_ACCESS_KEY_ID  }}
+          aws-secret-access-key: ${{ secrets.APT_REPO_AWS_SECRET_ACCESS_KEY  }}
+          bucket-codename: ${{ matrix.ubuntu }}
